@@ -24,7 +24,9 @@ export class ProxyService {
     correlationId: string,
   ) {
     const notificationApiUrl = this.configService.get<string>('NOTIFICATION_API_URL');
-    const targetUrl = `${notificationApiUrl}/api${path}`;
+    // Remove /api prefix from path since notification-api already has it as global prefix
+    const cleanPath = path.replace(/^\/api/, '');
+    const targetUrl = `${notificationApiUrl}/api${cleanPath}`;
 
     const headers: Record<string, string> = {
       [CORRELATION_ID_HEADER]: correlationId,

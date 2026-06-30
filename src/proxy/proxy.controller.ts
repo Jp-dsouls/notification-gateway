@@ -4,9 +4,7 @@ import {
   Post,
   Put,
   Delete,
-  Patch,
   Req,
-  Param,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -22,7 +20,7 @@ import { CorrelationId } from '../common/decorators/correlation-id.decorator';
 export class ProxyController {
   constructor(private readonly proxyService: ProxyService) {}
 
-  @Get('products*')
+  @Get('products/*path')
   async getProducts(
     @Req() req: Request,
     @Res() res: Response,
@@ -52,7 +50,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Put('products*')
+  @Put('products/*path')
   async updateProduct(
     @Req() req: Request,
     @Res() res: Response,
@@ -67,7 +65,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Get('channels*')
+  @Get('channels/*path')
   async getChannels(
     @Req() req: Request,
     @Res() res: Response,
@@ -97,7 +95,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Put('channels*')
+  @Put('channels/*path')
   async updateChannel(
     @Req() req: Request,
     @Res() res: Response,
@@ -112,7 +110,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Get('templates*')
+  @Get('templates/*path')
   async getTemplates(
     @Req() req: Request,
     @Res() res: Response,
@@ -142,7 +140,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Put('templates*')
+  @Put('templates/*path')
   async updateTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -157,7 +155,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Delete('templates*')
+  @Delete('templates/*path')
   async deleteTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -172,7 +170,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Get('notifications*')
+  @Get('notifications/*path')
   async getNotifications(
     @Req() req: Request,
     @Res() res: Response,
@@ -187,7 +185,7 @@ export class ProxyController {
     res.status(result.status).json(result.data);
   }
 
-  @Post('notifications*')
+  @Post('notifications/send')
   async sendNotification(
     @Req() req: Request,
     @Res() res: Response,
