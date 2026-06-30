@@ -9,12 +9,14 @@ import {
 } from '../common/exceptions/gateway.exceptions';
 import { CORRELATION_ID_HEADER } from '../common/middleware/correlation-id.middleware';
 import { PRODUCT_ID_HEADER } from '../auth/guards/api-key.guard';
+import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class ProxyService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly logger: LoggerService,
   ) {}
 
   async proxyRequest(
@@ -38,18 +40,7 @@ export class ProxyService {
       headers[PRODUCT_ID_HEADER] = productId;
     }
 
-    console.log(
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        level: 'INFO',
-        service: 'gateway',
-        context: 'ProxyService.proxyRequest',
-        correlationId,
-        method,
-        targetUrl,
-        message: 'Proxying request to notification-api',
-      }),
-    );
+    this.logger.log(`Proxying ${method} ${targetUrl}`, correlationId);
 
     try {
       const response = await firstValueFrom(
@@ -63,19 +54,7 @@ export class ProxyService {
         }),
       );
 
-      console.log(
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          level: 'INFO',
-          service: 'gateway',
-          context: 'ProxyService.proxyRequest',
-          correlationId,
-          method,
-          targetUrl,
-          statusCode: response.status,
-          message: 'Request proxied successfully',
-        }),
-      );
+      this.logger.log(`Proxied ${method} ${targetUrl} → ${response.status}`, correlationId);
 
       return {
         status: response.status,

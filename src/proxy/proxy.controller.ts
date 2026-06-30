@@ -223,6 +223,7 @@ export class ProxyController {
   }
 
   @Post('notifications/send')
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   @ApiOperation({ summary: 'Send a notification (enqueue for processing)' })
   @ApiResponse({ status: 202, description: 'Notification queued successfully' })
   @ApiResponse({ status: 401, description: 'Invalid or missing API key' })

@@ -5,6 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CommonModule } from './common/common.module';
 import { LoggerModule } from './logger/logger.module';
 import { ProxyModule } from './proxy/proxy.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { ProxyModule } from './proxy/proxy.module';
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: Number(process.env.THROTTLE_TTL) || 60,
+        ttl: (Number(process.env.THROTTLE_TTL) || 60) * 1000,
         limit: Number(process.env.THROTTLE_LIMIT) || 100,
       },
     ]),
@@ -24,6 +25,7 @@ import { ProxyModule } from './proxy/proxy.module';
     CommonModule,
     LoggerModule,
     ProxyModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

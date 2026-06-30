@@ -9,6 +9,7 @@ import {
   ProductInactiveException,
 } from '../../common/exceptions/gateway.exceptions';
 import { CORRELATION_ID_HEADER } from '../../common/middleware/correlation-id.middleware';
+import { LoggerService } from '../../logger/logger.service';
 
 export const PRODUCT_ID_HEADER = 'x-product-id';
 
@@ -17,6 +18,7 @@ export class ApiKeyGuard implements CanActivate {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly logger: LoggerService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -51,17 +53,10 @@ export class ApiKeyGuard implements CanActivate {
       (request as Request & { productId: string }).productId = product.id;
       request.headers[PRODUCT_ID_HEADER] = product.id;
 
-      console.log(
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          level: 'INFO',
-          service: 'gateway',
-          context: 'ApiKeyGuard',
-          correlationId,
-          productId: product.id,
-          productName: product.name,
-          message: 'API Key validated successfully',
-        }),
+      const maskedKey = apiKey ? `${apiKey.substring(0, 8)}...` : 'N/A';
+      this.logger.log(
+        `API Key validated: ${maskedKey} | product: ${product.name} (${product.id})`,
+        correlationId,
       );
 
       return true;

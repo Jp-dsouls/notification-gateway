@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CORRELATION_ID_HEADER } from '../middleware/correlation-id.middleware';
+import { LoggerService } from '../../logger/logger.service';
 
 export interface ErrorResponse {
   statusCode: number;
@@ -19,6 +20,8 @@ export interface ErrorResponse {
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  constructor(private readonly logger: LoggerService) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -67,17 +70,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       correlationId,
     };
 
-    console.error(
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        level: 'ERROR',
-        service: 'gateway',
-        correlationId,
-        method: request.method,
-        url: request.url,
-        statusCode,
-        message,
-      }),
+    this.logger.error(
+      `[${request.method}] ${request.url} - ${statusCode}: ${JSON.stringify(message)}`,
+      undefined,
+      correlationId,
     );
 
     response.status(statusCode).json(errorResponse);
