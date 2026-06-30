@@ -4,6 +4,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
 import { CorrelationIdInterceptor } from './common/interceptors/correlation-id.interceptor';
+import { LoggingInterceptor } from './logger/logging.interceptor';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,12 +51,13 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new GlobalExceptionFilter());
-  app.useGlobalInterceptors(new CorrelationIdInterceptor());
+  app.useGlobalInterceptors(new CorrelationIdInterceptor(), new LoggingInterceptor(app.get(LoggerService)));
 
+  const logger = app.get(LoggerService);
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  console.log(`Gateway running on port ${port}`);
-  console.log(`Swagger docs: http://localhost:${port}/docs`);
+  logger.log(`Gateway running on port ${port}`);
+  logger.log(`Swagger docs: http://localhost:${port}/docs`);
 }
 
 bootstrap();

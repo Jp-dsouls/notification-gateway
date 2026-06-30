@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const throttler_1 = require("@nestjs/throttler");
 const axios_1 = require("@nestjs/axios");
 const common_module_1 = require("./common/common.module");
+const logger_module_1 = require("./logger/logger.module");
 const proxy_module_1 = require("./proxy/proxy.module");
 let AppModule = class AppModule {
 };
@@ -33,6 +34,7 @@ exports.AppModule = AppModule = __decorate([
                 maxRedirects: 5,
             }),
             common_module_1.CommonModule,
+            logger_module_1.LoggerModule,
             proxy_module_1.ProxyModule,
         ],
     })

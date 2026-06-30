@@ -6,6 +6,8 @@ const swagger_1 = require("@nestjs/swagger");
 const app_module_1 = require("./app.module");
 const global_exception_filter_1 = require("./common/filters/global-exception.filter");
 const correlation_id_interceptor_1 = require("./common/interceptors/correlation-id.interceptor");
+const logging_interceptor_1 = require("./logger/logging.interceptor");
+const logger_service_1 = require("./logger/logger.service");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors();
@@ -42,11 +44,12 @@ async function bootstrap() {
         },
     }));
     app.useGlobalFilters(new global_exception_filter_1.GlobalExceptionFilter());
-    app.useGlobalInterceptors(new correlation_id_interceptor_1.CorrelationIdInterceptor());
+    app.useGlobalInterceptors(new correlation_id_interceptor_1.CorrelationIdInterceptor(), new logging_interceptor_1.LoggingInterceptor(app.get(logger_service_1.LoggerService)));
+    const logger = app.get(logger_service_1.LoggerService);
     const port = process.env.PORT || 3000;
     await app.listen(port);
-    console.log(`Gateway running on port ${port}`);
-    console.log(`Swagger docs: http://localhost:${port}/docs`);
+    logger.log(`Gateway running on port ${port}`);
+    logger.log(`Swagger docs: http://localhost:${port}/docs`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

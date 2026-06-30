@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { HttpModule } from '@nestjs/axios';
 import { CommonModule } from './common/common.module';
+import { LoggerModule } from './logger/logger.module';
 import { ProxyModule } from './proxy/proxy.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { ProxyModule } from './proxy/proxy.module';
       maxRedirects: 5,
     }),
     CommonModule,
+    LoggerModule,
     ProxyModule,
   ],
 })
