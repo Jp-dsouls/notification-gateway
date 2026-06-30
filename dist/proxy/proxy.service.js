@@ -24,7 +24,8 @@ let ProxyService = class ProxyService {
     }
     async proxyRequest(method, path, request, correlationId) {
         const notificationApiUrl = this.configService.get('NOTIFICATION_API_URL');
-        const targetUrl = `${notificationApiUrl}/api${path}`;
+        const cleanPath = path.replace(/^\/api/, '');
+        const targetUrl = `${notificationApiUrl}/api${cleanPath}`;
         const headers = {
             [correlation_id_middleware_1.CORRELATION_ID_HEADER]: correlationId,
             'Content-Type': 'application/json',

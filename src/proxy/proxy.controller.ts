@@ -10,17 +10,24 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Throttle } from '@nestjs/throttler';
+import { ApiTags, ApiOperation, ApiHeader, ApiResponse } from '@nestjs/swagger';
 import { ProxyService } from './proxy.service';
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
 import { CorrelationId } from '../common/decorators/correlation-id.decorator';
 
+@ApiTags('proxy')
 @Controller()
 @UseGuards(ApiKeyGuard)
 @Throttle({ default: { ttl: 60000, limit: 100 } })
+@ApiHeader({ name: 'X-Product-Key', description: 'API Key for product authentication', required: true })
+@ApiHeader({ name: 'X-Correlation-ID', description: 'Tracing correlation ID', required: false })
 export class ProxyController {
   constructor(private readonly proxyService: ProxyService) {}
 
   @Get('products/*path')
+  @ApiOperation({ summary: 'Proxy GET requests to products endpoint' })
+  @ApiResponse({ status: 200, description: 'Products data' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async getProducts(
     @Req() req: Request,
     @Res() res: Response,
@@ -36,6 +43,9 @@ export class ProxyController {
   }
 
   @Post('products')
+  @ApiOperation({ summary: 'Proxy POST requests to products endpoint' })
+  @ApiResponse({ status: 201, description: 'Product created' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async createProduct(
     @Req() req: Request,
     @Res() res: Response,
@@ -51,6 +61,9 @@ export class ProxyController {
   }
 
   @Put('products/*path')
+  @ApiOperation({ summary: 'Proxy PUT requests to products endpoint' })
+  @ApiResponse({ status: 200, description: 'Product updated' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async updateProduct(
     @Req() req: Request,
     @Res() res: Response,
@@ -66,6 +79,9 @@ export class ProxyController {
   }
 
   @Get('channels/*path')
+  @ApiOperation({ summary: 'Proxy GET requests to channels endpoint' })
+  @ApiResponse({ status: 200, description: 'Channels data' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async getChannels(
     @Req() req: Request,
     @Res() res: Response,
@@ -81,6 +97,9 @@ export class ProxyController {
   }
 
   @Post('channels')
+  @ApiOperation({ summary: 'Proxy POST requests to channels endpoint' })
+  @ApiResponse({ status: 201, description: 'Channel created' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async createChannel(
     @Req() req: Request,
     @Res() res: Response,
@@ -96,6 +115,9 @@ export class ProxyController {
   }
 
   @Put('channels/*path')
+  @ApiOperation({ summary: 'Proxy PUT requests to channels endpoint' })
+  @ApiResponse({ status: 200, description: 'Channel updated' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async updateChannel(
     @Req() req: Request,
     @Res() res: Response,
@@ -111,6 +133,9 @@ export class ProxyController {
   }
 
   @Get('templates/*path')
+  @ApiOperation({ summary: 'Proxy GET requests to templates endpoint' })
+  @ApiResponse({ status: 200, description: 'Templates data' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async getTemplates(
     @Req() req: Request,
     @Res() res: Response,
@@ -126,6 +151,9 @@ export class ProxyController {
   }
 
   @Post('templates')
+  @ApiOperation({ summary: 'Proxy POST requests to templates endpoint' })
+  @ApiResponse({ status: 201, description: 'Template created' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async createTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -141,6 +169,9 @@ export class ProxyController {
   }
 
   @Put('templates/*path')
+  @ApiOperation({ summary: 'Proxy PUT requests to templates endpoint' })
+  @ApiResponse({ status: 200, description: 'Template updated' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async updateTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -156,6 +187,9 @@ export class ProxyController {
   }
 
   @Delete('templates/*path')
+  @ApiOperation({ summary: 'Proxy DELETE requests to templates endpoint' })
+  @ApiResponse({ status: 200, description: 'Template deleted' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async deleteTemplate(
     @Req() req: Request,
     @Res() res: Response,
@@ -171,6 +205,9 @@ export class ProxyController {
   }
 
   @Get('notifications/*path')
+  @ApiOperation({ summary: 'Proxy GET requests to notifications endpoint' })
+  @ApiResponse({ status: 200, description: 'Notifications data' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
   async getNotifications(
     @Req() req: Request,
     @Res() res: Response,
@@ -186,6 +223,10 @@ export class ProxyController {
   }
 
   @Post('notifications/send')
+  @ApiOperation({ summary: 'Send a notification (enqueue for processing)' })
+  @ApiResponse({ status: 202, description: 'Notification queued successfully' })
+  @ApiResponse({ status: 401, description: 'Invalid or missing API key' })
+  @ApiResponse({ status: 403, description: 'Template does not belong to product' })
   async sendNotification(
     @Req() req: Request,
     @Res() res: Response,
